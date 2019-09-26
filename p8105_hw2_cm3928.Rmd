@@ -1,0 +1,22 @@
+---
+title: "p8105_hw2_cm3928"
+author: "Clement Mugenzi"
+date: "9/25/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readxl)
+library(readr)
+library(haven)
+library(skimr)
+```
+
+# Question 1
+
+```{r reading in data, message=FALSE}
+trash_df = read_excel("HealthyHarborWaterWheelTotals2018-7-28.xlsx")
+view(trash_df)
+```
+
