@@ -19,10 +19,10 @@ The data will be read in the chunk below.
 ```{r, message=FALSE}
 trash_df = 
   read_excel("HealthyHarborWaterWheelTotals2018-7-28.xlsx",
-                      range = "A2:N338") %>% 
-  janitor::clean_names()
-head(trash_df)
+             range = "A2:N336")
+view(trash_df)
 ```
+
 
 
 
