@@ -15,14 +15,23 @@ library(skimr)
 
 # Question 1
 
-The data will be read in the chunk below.
-```{r, message=FALSE}
+In the chunk below, I will load the dataset, clean names, and get rid of unwanted rows.
+
+```{r, include=TRUE}
 trash_df = 
   read_excel("HealthyHarborWaterWheelTotals2018-7-28.xlsx",
-             range = "A2:N336")
+             range = "A2:N338") %>% 
+  janitor::clean_names() %>% 
+  filter(dumpster >= 1)
 view(trash_df)
 ```
 
+The chunk below converts the variable sports_balls from decimal to integer.
+
+```{r, include=TRUE}
+sports_b = round(pull(trash_df, sports_balls), digits = 2)
+sports_int = as.integer(sports_b)
+```
 
 
 
