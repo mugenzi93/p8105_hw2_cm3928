@@ -39,19 +39,20 @@ sports_int = as.integer(sports_b)
 
 Let us first load and clean precipitation data from year 2018 as well as add a new variable year.
 
-```{r}
+```{r, include=TRUE}
 prec_2018_pre =
   read_excel("HealthyHarborWaterWheelTotals2018-7-28.xlsx",
-             range = "A2:B9", sheet = 3) %>% 
+             range = "A2:B14", sheet = 3) %>% 
   mutate(year = 2018) %>%
-  janitor::clean_names()
+  janitor::clean_names() %>% 
+  drop_na(total)
 prec_2018 = prec_2018_pre[,c(3,1,2)]
 view(prec_2018)
 ```
 
 Next, I will load and clean precipitation data from 2017 as well as create a new variable year.
 
-```{r}
+```{r, include=TRUE}
 prec_2017_pre = 
   read_excel("HealthyHarborWaterWheelTotals2018-7-28.xlsx",
              range = "A2:B14", sheet = 4) %>% 
@@ -62,6 +63,84 @@ view(prec_2017)
 ```
 
 
+Finally, I will combine both the 2018 and 2017 precipitation dataframes and convert month to character variable.
+
+```{r, include=TRUE}
+prec_df = 
+  left_join(prec_2017, prec_2018, by = "month")
+prec_1718 = prec_df[,c(2,1,4,3,5)]
+view(prec_1718)
+```
+
+
+```{r, include=TRUE}
+prec_1718 %>% 
+  pivot_longer(
+    year.x:year.y,
+    names_prefix = "year",
+    values_to = "year"
+  )
+view(prec_1718)
+```
+
+
+
+
+
+# Question 2 
+
+**First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.**
+
+```{r, include=TRUE}
+pols_df = 
+  read_csv("fivethirtyeight_datasets/pols-month.csv") %>% 
+  separate(col = mon, into = c("year", "month", "day")) %>% 
+  mutate(
+    month = as.numeric(month),
+    month = month.abb[month],
+    president = recode(prez_gop, `0` = "dem", `1` = "gop")) %>% 
+  select(-c(prez_gop, prez_dem, day)) %>%
+view(pols_df)
+```
+
+
+**Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.**
+
+```{r, include=TRUE}
+snp_df1 = 
+  read_csv("fivethirtyeight_datasets/snp.csv") %>% 
+  separate(col = date, into = c("day", "month", "year")) %>% 
+  mutate(
+    month = as.numeric(month),
+    month = month.abb[month]) %>% 
+  select(-day)
+snp_df = snp_df1[,c(2,1,3)]
+view(snp_df)
+```
+
+
+**Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.**
+
+```{r, include=TRUE}
+jobless_df = 
+  read_csv("fivethirtyeight_datasets/unemployment.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    jan:dec,
+    names_to = "month",
+    values_to = "day") %>% 
+  select(-day)
+# how do you represent day as integer. not possible so far
+view(jobless_df)
+```
+
+**Join the datasets by merging snp into pols, and merging unemployment into the result.**
+
+```{r, include=TRUE}
+df = 
+  left_join(pols_df, snp_df, by = "month")
+view(df)
+```
 
 
 
