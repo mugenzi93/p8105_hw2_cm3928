@@ -32,6 +32,11 @@ trash_df =
 view(trash_df)
 ```
 
+
+```{r}
+kable(trash_df, markdown, digits = 1)
+```
+
 ## Second Part
 
 Let us first load and clean precipitation data from year 2018 as well as add a new variable year.
@@ -42,7 +47,10 @@ prec_2018 =
              range = "A2:B14", sheet = 5) %>%
   mutate(year = 2018) %>% 
   janitor::clean_names()
-view(prec_2018)
+```
+
+```{r}
+kable(prec_2018, markdown, digits = 1)
 ```
 
 Next, I will load and clean precipitation data from 2017 as well as create a new variable year.
@@ -53,7 +61,10 @@ prec_2017 =
              range = "A2:B14", sheet = 6) %>% 
   mutate(year = 2017) %>% 
   janitor::clean_names()
-view(prec_2017)
+```
+
+```{r}
+kable(prec_2017, markdown, digits = 1)
 ```
 
 
@@ -65,7 +76,11 @@ prec_df =
   mutate(
     month = as.numeric(month),
     month = month.name[month])
-view(prec_df)
+```
+
+
+```{r}
+kable(prec_df, markdown, digits = 1)
 ```
 
 The Mr. Trash Wheel is a dataset comprised of **`r ncol(trash_df)`** variables and **`r nrow(trash_df)`** observations. And the key variables are **dumpster**, **month**, **year** and **sports balls**.
@@ -94,10 +109,14 @@ pols_df =
   separate(col = mon, into = c("year", "month", "day")) %>% 
    mutate(
     month = as.numeric(month),
-    month = month.abb[month],
+    month = month.name[month],
     president = recode(prez_gop, `0` = "dem", `1` = "gop")) %>% 
-  select(-c(prez_gop, prez_dem, day)) %>%
-view(pols_df)
+  select(-c(prez_gop, prez_dem, day))
+```
+
+
+```{r}
+kable(pols_df, markdown, digits = 1)
 ```
 
 The following chunk will load, clean the dataset 'snp', and variables will be arranged in a way to make it easier for me to join datasets.
@@ -108,10 +127,13 @@ snp_df1 =
   separate(col = date, into = c("day", "month", "year")) %>% 
   mutate(
     month = as.numeric(month),
-    month = month.abb[month]) %>% 
+    month = month.name[month]) %>% 
   select(-day)
 snp_df = snp_df1[,c(2,1,3)]
-view(snp_df)
+```
+
+```{r}
+kable(snp_df, markdown, digits = 1)
 ```
 
 The chunk below will load and clean the unemployment dataset, and finally, tidy it with a goal of being able to merge it with the two datasets above.
@@ -125,7 +147,6 @@ jobless_df =
     names_to = "month",
     values_to = "day") %>% 
   select(-day)
-# how do you represent day as integer. not possible so far
 view(jobless_df)
 ```
 
@@ -134,8 +155,8 @@ Let us first join pols_df and snp_df.
 ```{r, include=TRUE}
 df = 
   left_join(snp_df, pols_df, by = c("month", "year")) %>% 
-              mutate(
-                year = as.numeric(year)
+  mutate(
+    year = as.numeric(year)
 )
 view(df)
 ```
@@ -146,6 +167,10 @@ Next, we will join the new dataframe created in the above chunk with the jobless
 master_df = 
   left_join(df, jobless_df, by = c("month", "year"))
 view(master_df)
+```
+
+```{r}
+kable(master_df, markdown)
 ```
 
 
@@ -174,7 +199,6 @@ popnames_df =
     ethnicity = recode(ethnicity, "black non hisp" = "black non hispanic"),
     ethnicity = recode(ethnicity, "white non hisp" = "white non hispanic")
   )
-view(popnames_df)
 ```
 
 
@@ -189,7 +213,10 @@ olivia_as_name =
     names_from = "year_of_birth",
     values_from = "rank"
   )
-view(olivia_as_name)
+```
+
+```{r}
+kable(olivia_as_name, markdown, digits = 1)
 ```
 
 Next, I will produce a nice, readable tibble representing popular male's name by ethnicity and year of birth.
@@ -203,7 +230,10 @@ pop_male_name =
     names_from = "year_of_birth",
     values_from = "childs_first_name"
   )
-view(pop_male_name)
+```
+
+```{r}
+kable(pop_male_name, markdown, digits = 1)
 ```
 
 Finally, I will produce a scatterplot for white non hispanic male born in 2016, showing the number of children with a name against the rank in popularity of that name.
@@ -215,10 +245,14 @@ scatter_male =
          ethnicity == "white non hispanic", 
          year_of_birth == "2016") %>% 
   ggplot(aes(x = rank, y = count)) +
-           geom_point()
+  geom_point() +
+  labs(
+    title = "Scatter Plot for non Hispanic Male Born in 2016",
+    x = "Rank in Popularity",
+    y = "Number of Children with a given name"
+  )
 scatter_male
 ```
-
 
 
 
